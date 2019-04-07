@@ -1,0 +1,5 @@
+{
+  "persistence": {
+    "controller": "com.metaring.framework.ext.persistence.mongodb.MongoDBPersistenceController"
+  }
+}
