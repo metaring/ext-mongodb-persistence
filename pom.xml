@@ -18,7 +18,7 @@
 
     <groupId>com.metaring</groupId>
     <artifactId>framework-ext-mongodb-persistence</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.5-SNAPSHOT</version>
 
     <name>MetaRing MongoDB Persistence Extension</name>
     <description>Persistence Extension made in MongoDB for the MetaRing Framework</description>
