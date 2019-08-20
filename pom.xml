@@ -18,7 +18,7 @@
 
     <groupId>com.metaring</groupId>
     <artifactId>framework-ext-mongodb-persistence</artifactId>
-    <version>1.2.8</version>
+    <version>1.2.9-SNAPSHOT</version>
 
     <name>MetaRing MongoDB Persistence Extension</name>
     <description>Persistence Extension made in MongoDB for the MetaRing Framework</description>
@@ -42,7 +42,7 @@
     <scm>
         <url>https://github.com/metaring/framework-ext-mongodb-persistence.git</url>
         <developerConnection>scm:git:git@github.com:metaring/framework-ext-mongodb-persistence.git</developerConnection>
-        <tag>v1.2.8</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <dependencies>
