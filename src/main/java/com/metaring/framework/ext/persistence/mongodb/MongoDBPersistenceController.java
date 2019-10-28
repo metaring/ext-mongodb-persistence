@@ -1,12 +1,12 @@
 /**
  *    Copyright 2019 MetaRing s.r.l.
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,7 @@ public class MongoDBPersistenceController implements PersistenceController {
     private ClientSession mongoSession;
     private MongoDatabase defaultDatabase;
     private DB defaultDB;
-    private boolean normalizeIdFields = false;
+    private boolean normalizeSpecialFields = false;
 
     @SuppressWarnings("deprecation")
     @Override
@@ -60,7 +60,7 @@ public class MongoDBPersistenceController implements PersistenceController {
                 catch(Exception e) {
                 }
                 DataRepresentation persistenceSettings = sysKB.get("persistence");
-                normalizeIdFields = persistenceSettings.hasProperty("normalizeIdFields") && persistenceSettings.getTruth("normalizeIdFields");
+                normalizeSpecialFields = persistenceSettings.hasProperty("normalizeSpecialFields") && persistenceSettings.getTruth("normalizeSpecialFields");
                 String databaseName = persistenceSettings.getText("database");
                 if (!StringUtil.isNullOrEmpty(databaseName)) {
                     defaultDatabase = mongoClient.getDatabase(databaseName);
@@ -116,7 +116,7 @@ public class MongoDBPersistenceController implements PersistenceController {
             if(error != null) {
                 query.completeExceptionally(error);
             } else {
-                query.complete(normalizeIdFields ? MongoDBMetaRingUtilities.normalizeIdFields(result) : result);
+                query.complete(normalizeSpecialFields ? MongoDBMetaRingUtilities.normalizeSpecialFields(result) : result);
             }
         }, asyncExecutor);
         return query;
@@ -129,17 +129,17 @@ public class MongoDBPersistenceController implements PersistenceController {
             if(error != null) {
                 update.completeExceptionally(error);
             } else {
-                update.complete(toOperationResult(result, normalizeIdFields));
+                update.complete(toOperationResult(result, normalizeSpecialFields));
             }
         }, asyncExecutor);
         return update;
     }
 
-    private static final OperationResult toOperationResult(DataRepresentation result, boolean normalizeIdFields) {
+    private static final OperationResult toOperationResult(DataRepresentation result, boolean normalizeSpecialFields) {
         if(result == null || result.isNull()) {
             return null;
         }
-        result = normalizeIdFields ? MongoDBMetaRingUtilities.normalizeIdFields(result) : result;
+        result = normalizeSpecialFields ? MongoDBMetaRingUtilities.normalizeSpecialFields(result) : result;
         if(result.hasProperty("manipulationNumber") || result.hasProperty("keys")) {
             return result.as(OperationResult.class);
         }

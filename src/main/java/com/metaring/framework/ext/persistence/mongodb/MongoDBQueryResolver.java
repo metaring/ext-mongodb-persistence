@@ -1,12 +1,12 @@
 /**
  *    Copyright 2019 MetaRing s.r.l.
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,11 @@ import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import com.mongodb.BasicDBObject;
+import com.metaring.framework.Tools;
+import com.metaring.framework.persistence.OperationResult;
+import com.metaring.framework.type.DataRepresentation;
+import com.metaring.framework.type.series.TextSeries;
+import com.metaring.framework.util.ObjectUtil;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
@@ -47,11 +51,6 @@ import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-
-import com.metaring.framework.Tools;
-import com.metaring.framework.persistence.OperationResult;
-import com.metaring.framework.type.DataRepresentation;
-import com.metaring.framework.type.series.TextSeries;
 
 @SuppressWarnings("unused")
 class MongoDBQueryResolver {
@@ -128,7 +127,7 @@ class MongoDBQueryResolver {
                 parsedResult.parameters = Tools.FACTORY_DATA_REPRESENTATION.fromJson(matchResult);
             }
 
-            if(parsedResult.parameters == null || parsedResult.parameters.isNull()) {
+            if(ObjectUtil.isNullOrEmpty(parsedResult.parameters)) {
                 parsedResult.parameters = Tools.FACTORY_DATA_REPRESENTATION.fromJson("[]");
             }
 
@@ -224,6 +223,12 @@ class MongoDBQueryResolver {
             options.collation(toCollation(params.get("collation")));
         }
         callback.accept(toDataRepresentation(info.collection.findOneAndUpdate(filter, update, options)));
+    }
+
+    private static final void aggregate(MongoDBQueryResolver info, Consumer<DataRepresentation> callback) {
+        final List<Bson> aggregation = new ArrayList<>();
+        info.parameters.forEach(it -> aggregation.add(toBson(it)));
+        callback.accept(toDataRepresentation(info.collection.aggregate(aggregation).first()));
     }
 
     private static final void findAndRemove(MongoDBQueryResolver info, DataRepresentation params, Bson filter, Consumer<DataRepresentation> callback) {
